@@ -1,0 +1,9 @@
+Analyzing The-menu-driver-app...                                
+
+   info - 'activeColor' is deprecated and shouldn't be used. Use activeThumbColor or activeTrackColor instead. This feature was deprecated after v3.31.0-2.0.pre - lib\screens\home_screen.dart:276:13 - deprecated_member_use
+   info - Don't invoke 'print' in production code - lib\services\api_service.dart:31:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\services\api_service.dart:47:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\services\api_service.dart:58:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\services\api_service.dart:69:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\services\api_service.dart:94:5 - avoid_print
+
