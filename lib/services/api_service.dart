@@ -3,11 +3,11 @@ import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
 class ApiService {
-  // Use http://10.0.2.2:8000 for Android Emulator
+  // Use http://10.0.2.2:8000 for Android Emulator (emulator's alias for PC localhost)
   // Use http://127.0.0.1:8000 for Web/Windows
-  // Use your COMPUTER'S IP (e.g. 192.168.1.XX) for physical mobile devices
+  // Use your COMPUTER'S IP (e.g. 192.168.8.101:8000) for physical mobile devices
   static const String baseUrl =
-      kIsWeb ? 'http://127.0.0.1:8000/api' : 'http://192.168.8.101:8000/api';
+      kIsWeb ? 'http://127.0.0.1:8000/api' : 'http://10.0.2.2:8000/api';
 
   static const Map<String, String> _headers = {
     'Content-Type': 'application/json',
@@ -30,7 +30,7 @@ class ApiService {
     required String vehicleNumber,
   }) async {
     try {
-      print('DEBUG: Attempting register at $baseUrl/register');
+      if (kDebugMode) print('DEBUG: Attempting register at $baseUrl/register');
       final response = await http.post(
         Uri.parse('$baseUrl/register'),
         headers: _headers,
@@ -46,7 +46,7 @@ class ApiService {
       );
       return _handleResponse(response);
     } catch (e) {
-      print('DEBUG: Register error: $e');
+      if (kDebugMode) print('DEBUG: Register error: $e');
       rethrow;
     }
   }
@@ -57,7 +57,7 @@ class ApiService {
     required String password,
   }) async {
     try {
-      print('DEBUG: Attempting login at $baseUrl/login');
+      if (kDebugMode) print('DEBUG: Attempting login at $baseUrl/login');
       final response = await http.post(
         Uri.parse('$baseUrl/login'),
         headers: _headers,
@@ -68,7 +68,7 @@ class ApiService {
       );
       return _handleResponse(response);
     } catch (e) {
-      print('DEBUG: Login error: $e');
+      if (kDebugMode) print('DEBUG: Login error: $e');
       rethrow;
     }
   }
@@ -142,7 +142,9 @@ class ApiService {
 
   // ─── Response handler ──────────────────────────────────────────────
   Map<String, dynamic> _handleResponse(http.Response response) {
-    print('DEBUG: API Response (${response.statusCode}): ${response.body}');
+    if (kDebugMode) {
+      print('DEBUG: API Response (${response.statusCode}): ${response.body}');
+    }
     final body = jsonDecode(response.body) as Map<String, dynamic>;
     if (response.statusCode >= 200 && response.statusCode < 300) {
       return {'success': true, ...body};

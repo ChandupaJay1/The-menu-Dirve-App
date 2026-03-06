@@ -465,7 +465,8 @@ class _StatusToggleCardState extends State<_StatusToggleCard> {
           Switch.adaptive(
             value: _isOnline,
             onChanged: (val) => setState(() => _isOnline = val),
-            activeColor: AppTheme.success,
+            activeThumbColor: AppTheme.success,
+            activeTrackColor: AppTheme.success.withAlpha((0.5 * 255).toInt()),
           ),
         ],
       ),
