@@ -155,21 +155,21 @@ class _SplashScreenState extends State<SplashScreen>
                       children: [
                         Text(
                           'THE MENU',
-                          style: GoogleFonts.lato(
+                          style: GoogleFonts.plusJakartaSans(
                             color: Theme.of(context).colorScheme.onSurface,
                             fontSize: 32,
                             fontWeight: FontWeight.w900,
-                            letterSpacing: 6,
+                            letterSpacing: 3,
                           ),
                         ),
                         const SizedBox(height: 6),
                         Text(
-                          'Driver Portal',
-                          style: GoogleFonts.lato(
+                          'DRIVER APP',
+                          style: GoogleFonts.plusJakartaSans(
                             color: AppTheme.primary,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            letterSpacing: 2,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: 2.5,
                           ),
                         ),
                       ],

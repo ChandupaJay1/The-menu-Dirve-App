@@ -13,8 +13,7 @@ class LoginScreen extends StatefulWidget {
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen>
-    with SingleTickerProviderStateMixin {
+class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
   final _emailCtrl = TextEditingController();
   final _passwordCtrl = TextEditingController();
@@ -26,8 +25,10 @@ class _LoginScreenState extends State<LoginScreen>
   void initState() {
     super.initState();
     _fadeCtrl = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 600));
-    _fadeAnim = CurvedAnimation(parent: _fadeCtrl, curve: Curves.easeIn);
+      vsync: this,
+      duration: const Duration(milliseconds: 600),
+    );
+    _fadeAnim = CurvedAnimation(parent: _fadeCtrl, curve: Curves.easeOutCubic);
     _fadeCtrl.forward();
   }
 
@@ -56,8 +57,7 @@ class _LoginScreenState extends State<LoginScreen>
           content: Text(auth.errorMessage ?? 'Login failed'),
           backgroundColor: AppTheme.error,
           behavior: SnackBarBehavior.floating,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
         ),
       );
     }
@@ -73,143 +73,223 @@ class _LoginScreenState extends State<LoginScreen>
       body: SafeArea(
         child: FadeTransition(
           opacity: _fadeAnim,
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 28),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 60),
+          child: Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 20),
 
-                  // Logo + header
-                  Center(
-                    child: Column(
-                      children: [
-                        Container(
-                          width: 80,
-                          height: 80,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            gradient: const LinearGradient(
-                              colors: [AppTheme.primary, AppTheme.primaryDark],
-                            ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: AppTheme.primary.withValues(alpha: 0.4),
-                                blurRadius: 24,
-                                spreadRadius: 2,
+                    // Brand Icon & Badge
+                    Center(
+                      child: Column(
+                        children: [
+                          Container(
+                            width: 86,
+                            height: 86,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              gradient: const LinearGradient(
+                                colors: [AppTheme.primary, AppTheme.primaryDark],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
                               ),
-                            ],
-                          ),
-                          child: const Icon(Icons.delivery_dining_rounded,
-                              color: Colors.black, size: 40),
-                        ),
-                        const SizedBox(height: 20),
-                        Text(
-                          'Welcome Back!',
-                          style: GoogleFonts.lato(
-                            color: Theme.of(context).colorScheme.onSurface,
-                            fontSize: 26,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                        const SizedBox(height: 6),
-                        Text(
-                          'Log in to your driver account',
-                          style: GoogleFonts.lato(
-                            color: Theme.of(context).colorScheme.onSurface.withAlpha(153),
-                            fontSize: 14,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  const SizedBox(height: 48),
-
-                  // Email field
-                  CustomTextField(
-                    controller: _emailCtrl,
-                    label: 'Email Address',
-                    hint: 'you@example.com',
-                    keyboardType: TextInputType.emailAddress,
-                    prefixIcon: Icons.email_outlined,
-                    validator: (val) {
-                      if (val == null || val.isEmpty) {
-                        return 'Email is required';
-                      }
-                      if (!val.contains('@')) return 'Enter a valid email';
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 16),
-
-                  // Password field
-                  CustomTextField(
-                    controller: _passwordCtrl,
-                    label: 'Password',
-                    hint: '••••••••',
-                    obscureText: _obscurePassword,
-                    prefixIcon: Icons.lock_outline_rounded,
-                    suffixIcon: _obscurePassword
-                        ? Icons.visibility_outlined
-                        : Icons.visibility_off_outlined,
-                    onSuffixTap: () =>
-                        setState(() => _obscurePassword = !_obscurePassword),
-                    validator: (val) {
-                      if (val == null || val.isEmpty) {
-                        return 'Password is required';
-                      }
-                      if (val.length < 6) return 'At least 6 characters';
-                      return null;
-                    },
-                  ),
-
-                  const SizedBox(height: 32),
-
-                  // Login button
-                  CustomButton(
-                    label: 'Login',
-                    isLoading: isLoading,
-                    onPressed: isLoading ? null : _login,
-                  ),
-
-                  const SizedBox(height: 24),
-
-                  // Sign up link
-                  Center(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          "Don't have an account? ",
-                          style: GoogleFonts.lato(
-                              color: Theme.of(context).colorScheme.onSurface.withAlpha(153), fontSize: 14),
-                        ),
-                        TextButton(
-                          onPressed: () =>
-                              Navigator.of(context).pushNamed('/signup'),
-                          style: TextButton.styleFrom(
-                            padding: EdgeInsets.zero,
-                            minimumSize: Size.zero,
-                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                          ),
-                          child: Text(
-                            'Sign Up',
-                            style: GoogleFonts.lato(
-                              color: AppTheme.primary,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: AppTheme.primary.withValues(alpha: 0.4),
+                                  blurRadius: 28,
+                                  spreadRadius: 4,
+                                  offset: const Offset(0, 8),
+                                ),
+                              ],
+                            ),
+                            child: const Icon(
+                              Icons.delivery_dining_rounded,
+                              color: Color(0xFF0F172A),
+                              size: 44,
                             ),
                           ),
-                        ),
-                      ],
+                          const SizedBox(height: 24),
+                          Text(
+                            'The Menu',
+                            style: GoogleFonts.plusJakartaSans(
+                              color: Theme.of(context).colorScheme.onSurface,
+                              fontSize: 30,
+                              fontWeight: FontWeight.w800,
+                              letterSpacing: -0.5,
+                            ),
+                          ),
+                          const SizedBox(height: 6),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: AppTheme.primary.withValues(alpha: 0.15),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Text(
+                              'DRIVER PORTAL',
+                              style: GoogleFonts.plusJakartaSans(
+                                color: AppTheme.primaryDark,
+                                fontSize: 11,
+                                fontWeight: FontWeight.w800,
+                                letterSpacing: 1.5,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
 
-                  const SizedBox(height: 40),
-                ],
+                    const SizedBox(height: 36),
+
+                    // Inputs Card
+                    Container(
+                      padding: const EdgeInsets.all(22),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.surface,
+                        borderRadius: BorderRadius.circular(24),
+                        border: Border.all(color: Theme.of(context).dividerColor),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.04),
+                            blurRadius: 20,
+                            offset: const Offset(0, 10),
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Sign In',
+                            style: GoogleFonts.plusJakartaSans(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w800,
+                              color: Theme.of(context).colorScheme.onSurface,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'Enter your driver credentials to access your route',
+                            style: GoogleFonts.plusJakartaSans(
+                              fontSize: 13,
+                              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                            ),
+                          ),
+                          const SizedBox(height: 24),
+
+                          // Email
+                          CustomTextField(
+                            controller: _emailCtrl,
+                            label: 'Email Address',
+                            hint: 'driver@freshbox.com',
+                            keyboardType: TextInputType.emailAddress,
+                            prefixIcon: Icons.alternate_email_rounded,
+                            validator: (val) {
+                              if (val == null || val.trim().isEmpty) {
+                                return 'Email is required';
+                              }
+                              if (!val.contains('@')) return 'Enter a valid email';
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: 16),
+
+                          // Password
+                          CustomTextField(
+                            controller: _passwordCtrl,
+                            label: 'Password',
+                            hint: '••••••••',
+                            obscureText: _obscurePassword,
+                            prefixIcon: Icons.lock_outline_rounded,
+                            suffixIcon: _obscurePassword
+                                ? Icons.visibility_outlined
+                                : Icons.visibility_off_outlined,
+                            onSuffixTap: () => setState(() => _obscurePassword = !_obscurePassword),
+                            validator: (val) {
+                              if (val == null || val.isEmpty) {
+                                return 'Password is required';
+                              }
+                              if (val.length < 6) return 'At least 6 characters';
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: 8),
+
+                          // Forgot Password
+                          Align(
+                            alignment: Alignment.centerRight,
+                            child: TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pushNamed(
+                                  '/forgot-password',
+                                  arguments: _emailCtrl.text.trim(),
+                                );
+                              },
+                              style: TextButton.styleFrom(
+                                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+                                minimumSize: Size.zero,
+                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                              ),
+                              child: Text(
+                                'Forgot Password?',
+                                style: GoogleFonts.plusJakartaSans(
+                                  color: AppTheme.primaryDark,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          const SizedBox(height: 24),
+
+                          // Login Button
+                          CustomButton(
+                            label: 'Sign In to Drive',
+                            icon: Icons.login_rounded,
+                            isLoading: isLoading,
+                            onPressed: isLoading ? null : _login,
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    const SizedBox(height: 28),
+
+                    // Sign up prompt
+                    Center(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            "New driver? ",
+                            style: GoogleFonts.plusJakartaSans(
+                              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                              fontSize: 14,
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: () => Navigator.of(context).pushNamed('/signup'),
+                            child: Text(
+                              'Register as Driver',
+                              style: GoogleFonts.plusJakartaSans(
+                                color: AppTheme.primaryDark,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    const SizedBox(height: 30),
+                  ],
+                ),
               ),
             ),
           ),

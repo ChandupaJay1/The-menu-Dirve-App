@@ -21,14 +21,37 @@ class Order {
 
   factory Order.fromJson(Map<String, dynamic> json) {
     return Order(
-      id: json['id'],
-      orderNumber: json['order_number'],
-      customerName: json['customer_name'],
-      customerPhone: json['customer_phone'],
-      deliveryAddress: json['delivery_address'],
-      totalAmount: double.parse(json['total_amount'].toString()),
-      status: json['status'],
-      createdAt: DateTime.parse(json['created_at']),
+      id: json['id'] is int
+          ? json['id']
+          : int.tryParse(json['id']?.toString() ?? '0') ?? 0,
+      orderNumber: (json['order_number'] ??
+              json['order_no'] ??
+              json['code'] ??
+              'ORD-${json['id']}')
+          .toString(),
+      customerName: (json['customer_name'] ??
+              json['customer']?['name'] ??
+              json['name'] ??
+              'Customer')
+          .toString(),
+      customerPhone: (json['customer_phone'] ??
+              json['customer']?['phone'] ??
+              json['phone'] ??
+              '-')
+          .toString(),
+      deliveryAddress:
+          (json['delivery_address'] ?? json['address'] ?? 'Delivery Address')
+              .toString(),
+      totalAmount: double.tryParse(
+              json['total_amount']?.toString() ??
+                  json['total']?.toString() ??
+                  '0') ??
+          0.0,
+      status: (json['status'] ?? 'assigned').toString(),
+      createdAt: json['created_at'] != null
+          ? (DateTime.tryParse(json['created_at'].toString()) ??
+              DateTime.now())
+          : DateTime.now(),
     );
   }
 
