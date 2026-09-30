@@ -8,6 +8,7 @@ import 'theme/app_theme.dart';
 import 'screens/splash_screen.dart';
 import 'screens/login_screen.dart';
 import 'screens/signup_screen.dart';
+import 'screens/forgot_password_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/profile_screen.dart';
 import 'screens/my_orders_screen.dart';
@@ -41,6 +42,7 @@ class TheMenuDriverApp extends StatelessWidget {
           '/': (_) => const SplashScreen(),
           '/login': (_) => const LoginScreen(),
           '/signup': (_) => const SignupScreen(),
+          '/forgot-password': (_) => const ForgotPasswordScreen(),
           '/home': (_) => const HomeScreen(),
           '/profile': (_) => const ProfileScreen(),
           '/orders': (_) => const MyOrdersScreen(),

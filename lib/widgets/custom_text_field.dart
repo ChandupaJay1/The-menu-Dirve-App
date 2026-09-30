@@ -27,24 +27,41 @@ class CustomTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TextFormField(
-      controller: controller,
-      obscureText: obscureText,
-      keyboardType: keyboardType,
-      validator: validator,
-      style: GoogleFonts.lato(
-          color: Theme.of(context).colorScheme.onSurface, fontSize: 14),
-      decoration: InputDecoration(
-        labelText: label,
-        hintText: hint,
-        prefixIcon: Icon(prefixIcon, size: 20),
-        suffixIcon: suffixIcon != null
-            ? GestureDetector(
-                onTap: onSuffixTap,
-                child: Icon(suffixIcon, size: 20),
-              )
-            : null,
-      ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: GoogleFonts.plusJakartaSans(
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.85),
+          ),
+        ),
+        const SizedBox(height: 8),
+        TextFormField(
+          controller: controller,
+          obscureText: obscureText,
+          keyboardType: keyboardType,
+          validator: validator,
+          style: GoogleFonts.plusJakartaSans(
+            color: Theme.of(context).colorScheme.onSurface,
+            fontSize: 15,
+            fontWeight: FontWeight.w500,
+          ),
+          decoration: InputDecoration(
+            hintText: hint,
+            prefixIcon: Icon(prefixIcon, size: 20),
+            suffixIcon: suffixIcon != null
+                ? IconButton(
+                    onPressed: onSuffixTap,
+                    icon: Icon(suffixIcon, size: 20),
+                    splashRadius: 20,
+                  )
+                : null,
+          ),
+        ),
+      ],
     );
   }
 }

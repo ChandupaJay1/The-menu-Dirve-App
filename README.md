@@ -1,6 +1,6 @@
-# The Menu – Driver App 🛵💨
+# FreshBox Ceylon – Driver App 🛵💨
 
-A premium, high-performance Flutter application built for **The Menu** restaurant delivery partners. This app handles driver authentication, profile management, and delivery status tracking with a sleek, dark-themed interface.
+A premium, high-performance Flutter application built for **FreshBox Ceylon** delivery partners. This app handles driver authentication, profile management, and delivery status tracking with a sleek, dark-themed interface.
 
 ## 🚀 Features
 - **Modern UI**: Dark mode glassmorphism design using `Google Fonts` (Lato).
@@ -41,7 +41,7 @@ flutter pub get
 ## 📱 Platform Specifics
 
 ### Android
-- **App Name**: The Menu Driver
+- **App Name**: FreshBox Ceylon Driver
 - **Package**: `com.example.the_menu_driver_app`
 - **Build APK**:
   ```powershell
@@ -49,7 +49,7 @@ flutter pub get
   ```
 
 ### iOS
-- **App Name**: The Menu Driver App
+- **App Name**: FreshBox Ceylon Driver App
 - **Build IPA** (Requires macOS + Xcode):
   ```bash
   flutter build ios --no-codesign

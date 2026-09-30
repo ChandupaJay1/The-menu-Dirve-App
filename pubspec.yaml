@@ -1,5 +1,5 @@
 name: the_menu_driver_app
-description: The Menu Restaurant - Delivery Driver App
+description: The Menu - Delivery Driver App
 publish_to: "none"
 version: 1.0.0+1
 
@@ -38,4 +38,3 @@ flutter:
   assets:
     - assets/images/
     - assets/animations/
-
