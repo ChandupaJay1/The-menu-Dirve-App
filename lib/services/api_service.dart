@@ -3,8 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
 class ApiService {
-  static const String baseUrl =
-      kIsWeb ? 'http://127.0.0.1:8001/api' : 'http://10.0.2.2:8001/api';
+  static const String baseUrl = 'https://menusrilanka.com/api/driver-app-api';
 
   static const Map<String, String> _headers = {
     'Content-Type': 'application/json',
