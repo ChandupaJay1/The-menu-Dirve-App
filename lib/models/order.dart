@@ -4,6 +4,8 @@ class Order {
   final String customerName;
   final String customerPhone;
   final String deliveryAddress;
+  final double? latitude;
+  final double? longitude;
   final double totalAmount;
   final String status;
   final DateTime createdAt;
@@ -14,6 +16,8 @@ class Order {
     required this.customerName,
     required this.customerPhone,
     required this.deliveryAddress,
+    this.latitude,
+    this.longitude,
     required this.totalAmount,
     required this.status,
     required this.createdAt,
@@ -42,12 +46,20 @@ class Order {
       deliveryAddress:
           (json['delivery_address'] ?? json['address'] ?? 'Delivery Address')
               .toString(),
+      latitude: double.tryParse(
+          (json['latitude'] ?? json['lat'] ?? json['delivery_latitude'] ?? '')
+              .toString()),
+      longitude: double.tryParse(
+          (json['longitude'] ?? json['lng'] ?? json['delivery_longitude'] ?? '')
+              .toString()),
       totalAmount: double.tryParse(
               json['total_amount']?.toString() ??
                   json['total']?.toString() ??
                   '0') ??
           0.0,
-      status: (json['status'] ?? 'assigned').toString(),
+      status: ((json['status'] ?? 'on_delivery').toString().toLowerCase() == 'assigned')
+          ? 'on_delivery'
+          : (json['status'] ?? 'on_delivery').toString(),
       createdAt: json['created_at'] != null
           ? (DateTime.tryParse(json['created_at'].toString()) ??
               DateTime.now())
@@ -62,6 +74,8 @@ class Order {
       'customer_name': customerName,
       'customer_phone': customerPhone,
       'delivery_address': deliveryAddress,
+      'latitude': latitude,
+      'longitude': longitude,
       'total_amount': totalAmount,
       'status': status,
       'created_at': createdAt.toIso8601String(),

@@ -7,6 +7,8 @@ import '../widgets/side_menu.dart';
 import '../models/order.dart';
 import '../providers/auth_provider.dart';
 import '../providers/order_provider.dart';
+import '../services/map_service.dart';
+import '../services/notification_service.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -26,6 +28,13 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   @override
   void initState() {
     super.initState();
+    NotificationService.init(
+      onMarkDelivered: (orderId) {
+        if (mounted) {
+          _fetchData();
+        }
+      },
+    );
     _pulseController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1400),
@@ -58,6 +67,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
         final orderProvider = Provider.of<OrderProvider>(context, listen: false);
         await orderProvider.fetchLatestOrders(driver!.token!);
         await orderProvider.fetchAllOrders(driver.token!);
+        NotificationService.syncActiveOrdersNotification(orderProvider.allOrders);
         setState(() {
           _lastSyncedAt = DateTime.now();
         });
@@ -76,6 +86,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
         orderProvider.fetchAllOrders(driver.token!),
       ]);
       if (mounted) {
+        NotificationService.syncActiveOrdersNotification(orderProvider.allOrders);
         setState(() {
           _lastSyncedAt = DateTime.now();
         });
@@ -213,7 +224,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     final totalOrdersCount = allOrders.length;
     final doneOrdersCount = allOrders.where((o) => o.status.toLowerCase() == 'delivered').length;
     final activeOrdersCount = allOrders
-        .where((o) => o.status.toLowerCase() == 'assigned' || o.status.toLowerCase() == 'picked_up')
+        .where((o) => o.status.toLowerCase() == 'assigned' || o.status.toLowerCase() == 'on_delivery')
         .length;
 
     // Status Styling
@@ -791,7 +802,7 @@ class _OrderCardState extends State<_OrderCard> {
     if (status == 'delivered') {
       statusBgColor = AppTheme.success.withValues(alpha: 0.15);
       statusTextColor = AppTheme.success;
-    } else if (status == 'picked_up') {
+    } else if (status == 'on_delivery' || status == 'assigned') {
       statusBgColor = Colors.orange.withValues(alpha: 0.15);
       statusTextColor = Colors.orange;
     } else if (status == 'cancelled') {
@@ -830,7 +841,9 @@ class _OrderCardState extends State<_OrderCard> {
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
-                  order.status.toUpperCase(),
+                  (status == 'assigned' || status == 'on_delivery')
+                      ? 'ON DELIVERY'
+                      : order.status.toUpperCase().replaceAll('_', ' '),
                   style: GoogleFonts.lato(
                     fontSize: 10,
                     fontWeight: FontWeight.bold,
@@ -860,24 +873,62 @@ class _OrderCardState extends State<_OrderCard> {
               ],
             ],
           ),
-          const SizedBox(height: 4),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Icon(Icons.location_on_outlined, size: 16, color: Colors.grey),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  order.deliveryAddress,
-                  style: GoogleFonts.lato(
-                    fontSize: 13,
-                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+          const SizedBox(height: 6),
+          InkWell(
+            onTap: () => MapService.openDirections(context, order),
+            borderRadius: BorderRadius.circular(8),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 4),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(5),
+                    decoration: BoxDecoration(
+                      color: Colors.redAccent.withValues(alpha: 0.12),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(Icons.location_on_rounded, size: 15, color: Colors.redAccent),
                   ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      order.deliveryAddress,
+                      style: GoogleFonts.lato(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
+                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.85),
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  const SizedBox(width: 6),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF2563EB).withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.directions_rounded, size: 13, color: Color(0xFF2563EB)),
+                        const SizedBox(width: 4),
+                        Text(
+                          'Map',
+                          style: GoogleFonts.lato(
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                            color: const Color(0xFF2563EB),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
           const Divider(height: 24),
           Row(
@@ -890,25 +941,7 @@ class _OrderCardState extends State<_OrderCard> {
                   fontSize: 16,
                 ),
               ),
-              if (status == 'assigned')
-                ElevatedButton(
-                  onPressed: _isUpdating ? null : () => _handleStatusUpdate('picked_up'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.orange,
-                    foregroundColor: Colors.white,
-                    minimumSize: const Size(100, 36),
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                  ),
-                  child: _isUpdating
-                      ? const SizedBox(
-                          width: 14,
-                          height: 14,
-                          child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                        )
-                      : const Text('Pick Up', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
-                )
-              else if (status == 'picked_up')
+              if (status == 'assigned' || status == 'on_delivery')
                 ElevatedButton(
                   onPressed: _isUpdating ? null : () => _handleStatusUpdate('delivered'),
                   style: ElevatedButton.styleFrom(
@@ -924,7 +957,7 @@ class _OrderCardState extends State<_OrderCard> {
                           height: 14,
                           child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                         )
-                      : const Text('Deliver', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
+                      : const Text('Delivered', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
                 ),
             ],
           ),
