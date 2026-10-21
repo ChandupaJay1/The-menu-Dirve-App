@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import '../providers/order_provider.dart';
 import '../models/order.dart';
+import '../services/map_service.dart';
 import '../theme/app_theme.dart';
 
 class MyOrdersScreen extends StatefulWidget {
@@ -85,7 +86,37 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
                 const SizedBox(height: 12),
                 _detailRow(Icons.phone_rounded, 'Phone', order.customerPhone),
                 const SizedBox(height: 12),
-                _detailRow(Icons.location_on_rounded, 'Delivery Address', order.deliveryAddress),
+                _detailRow(
+                  Icons.location_on_rounded,
+                  'Delivery Address',
+                  order.deliveryAddress,
+                  trailing: InkWell(
+                    onTap: () => MapService.openDirections(context, order),
+                    borderRadius: BorderRadius.circular(8),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF2563EB).withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.directions_rounded, size: 14, color: Color(0xFF2563EB)),
+                          const SizedBox(width: 4),
+                          Text(
+                            'Map',
+                            style: GoogleFonts.plusJakartaSans(
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                              color: const Color(0xFF2563EB),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
                 const SizedBox(height: 12),
                 _detailRow(
                   Icons.access_time_rounded,
@@ -123,7 +154,7 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
     );
   }
 
-  Widget _detailRow(IconData icon, String label, String value) {
+  Widget _detailRow(IconData icon, String label, String value, {Widget? trailing}) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -153,6 +184,7 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
             ],
           ),
         ),
+        if (trailing != null) trailing,
       ],
     );
   }
@@ -167,7 +199,7 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
     final filteredOrders = allOrders.where((order) {
       final status = order.status.toLowerCase();
       final matchesFilter = switch (_selectedFilter) {
-        'active' => status == 'assigned' || status == 'picked_up',
+        'active' => status == 'assigned' || status == 'on_delivery',
         'delivered' => status == 'delivered',
         'cancelled' => status == 'cancelled',
         _ => true,
@@ -211,9 +243,34 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
         color: AppTheme.primary,
         child: Column(
           children: [
+            // Overview Stats
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: _StatCard(
+                      icon: Icons.receipt_long_rounded,
+                      label: 'Total Orders',
+                      value: allOrders.length.toString(),
+                      color: AppTheme.accent,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _StatCard(
+                      icon: Icons.check_circle_outline_rounded,
+                      label: 'Delivered',
+                      value: allOrders.where((o) => o.status.toLowerCase() == 'delivered').length.toString(),
+                      color: AppTheme.success,
+                    ),
+                  ),
+                ],
+              ),
+            ),
             // Search Bar & Filter Chips Header
             Container(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
               color: Theme.of(context).colorScheme.surface,
               child: Column(
                 children: [
@@ -248,7 +305,7 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
                         const SizedBox(width: 8),
                         _filterChip(
                           'active',
-                          'Active (${allOrders.where((o) => o.status == 'assigned' || o.status == 'picked_up').length})',
+                          'Active (${allOrders.where((o) => o.status == 'assigned' || o.status == 'on_delivery').length})',
                         ),
                         const SizedBox(width: 8),
                         _filterChip(
@@ -467,25 +524,61 @@ class _OrderListItemState extends State<_OrderListItem> {
               ],
             ),
             const SizedBox(height: 6),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Icon(Icons.location_on_outlined,
-                    size: 16,
-                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5)),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    order.deliveryAddress,
-                    style: GoogleFonts.plusJakartaSans(
-                      fontSize: 13,
-                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+            InkWell(
+              onTap: () => MapService.openDirections(context, order),
+              borderRadius: BorderRadius.circular(8),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(5),
+                      decoration: BoxDecoration(
+                        color: Colors.redAccent.withValues(alpha: 0.12),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(Icons.location_on_rounded, size: 15, color: Colors.redAccent),
                     ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        order.deliveryAddress,
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w500,
+                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.85),
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    const SizedBox(width: 6),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF2563EB).withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.directions_rounded, size: 13, color: Color(0xFF2563EB)),
+                          const SizedBox(width: 4),
+                          Text(
+                            'Map',
+                            style: GoogleFonts.plusJakartaSans(
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                              color: const Color(0xFF2563EB),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
             const Divider(height: 24),
             Row(
@@ -512,25 +605,7 @@ class _OrderListItemState extends State<_OrderListItem> {
                     ),
                   ],
                 ),
-                if (status == 'assigned')
-                  ElevatedButton(
-                    onPressed: _isUpdating ? null : () => _handleStatusUpdate('picked_up'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.orange,
-                      foregroundColor: Colors.white,
-                      minimumSize: const Size(96, 36),
-                      padding: const EdgeInsets.symmetric(horizontal: 14),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                    ),
-                    child: _isUpdating
-                        ? const SizedBox(
-                            width: 14,
-                            height: 14,
-                            child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                          )
-                        : const Text('Pick Up', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
-                  )
-                else if (status == 'picked_up')
+                if (status == 'assigned' || status == 'on_delivery')
                   ElevatedButton(
                     onPressed: _isUpdating ? null : () => _handleStatusUpdate('delivered'),
                     style: ElevatedButton.styleFrom(
@@ -546,7 +621,7 @@ class _OrderListItemState extends State<_OrderListItem> {
                             height: 14,
                             child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                           )
-                        : const Text('Deliver', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                        : const Text('Delivered', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
                   )
                 else
                   Text(
@@ -574,11 +649,10 @@ class _StatusChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Color color;
-    switch (status.toLowerCase()) {
+    final normalized = status.toLowerCase();
+    switch (normalized) {
+      case 'on_delivery':
       case 'assigned':
-        color = const Color(0xFF2563EB);
-        break;
-      case 'picked_up':
         color = Colors.orange;
         break;
       case 'delivered':
@@ -591,6 +665,10 @@ class _StatusChip extends StatelessWidget {
         color = Colors.grey;
     }
 
+    final displayText = (normalized == 'assigned' || normalized == 'on_delivery')
+        ? 'ON DELIVERY'
+        : status.toUpperCase().replaceAll('_', ' ');
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
@@ -599,7 +677,7 @@ class _StatusChip extends StatelessWidget {
         border: Border.all(color: color.withValues(alpha: 0.4)),
       ),
       child: Text(
-        status.toUpperCase(),
+        displayText,
         style: GoogleFonts.plusJakartaSans(
           color: color,
           fontSize: 10,
@@ -610,3 +688,53 @@ class _StatusChip extends StatelessWidget {
     );
   }
 }
+
+class _StatCard extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final String value;
+  final Color color;
+
+  const _StatCard({
+    required this.icon,
+    required this.label,
+    required this.value,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Theme.of(context).dividerColor),
+      ),
+      child: Column(
+        children: [
+          Icon(icon, color: color, size: 28),
+          const SizedBox(height: 12),
+          Text(
+            value,
+            style: GoogleFonts.plusJakartaSans(
+              color: Theme.of(context).colorScheme.onSurface,
+              fontSize: 18,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            label,
+            style: GoogleFonts.plusJakartaSans(
+              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+

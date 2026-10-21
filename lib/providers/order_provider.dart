@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/order.dart';
 import '../services/api_service.dart';
+import '../services/notification_service.dart';
 
 class OrderProvider extends ChangeNotifier {
   final ApiService _api = ApiService();
@@ -25,6 +26,7 @@ class OrderProvider extends ChangeNotifier {
       if (result['success'] == true) {
         final List<dynamic> ordersJson = result['orders'];
         _allOrders = ordersJson.map((json) => Order.fromJson(json)).toList();
+        NotificationService.syncActiveOrdersNotification(_allOrders);
       } else {
         _errorMessage = result['message'] ?? 'Failed to fetch orders';
       }
@@ -46,6 +48,9 @@ class OrderProvider extends ChangeNotifier {
       if (result['success'] == true) {
         final List<dynamic> ordersJson = result['orders'];
         _latestOrders = ordersJson.map((json) => Order.fromJson(json)).toList();
+        if (_allOrders.isEmpty) {
+          NotificationService.syncActiveOrdersNotification(_latestOrders);
+        }
       } else {
         _errorMessage = result['message'] ?? 'Failed to fetch latest orders';
       }
@@ -69,6 +74,7 @@ class OrderProvider extends ChangeNotifier {
         // Refresh orders locally
         await fetchLatestOrders(token);
         await fetchAllOrders(token);
+        NotificationService.syncActiveOrdersNotification(_allOrders);
         return true;
       }
       return false;
