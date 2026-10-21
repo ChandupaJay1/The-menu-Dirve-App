@@ -30,6 +30,7 @@ class _SignupScreenState extends State<SignupScreen> {
     'Bicycle',
     'Scooter',
     'Car',
+    'Van',
   ];
 
   @override
@@ -60,11 +61,16 @@ class _SignupScreenState extends State<SignupScreen> {
     if (success) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Account created! Please log in.'),
+          content: const Row(
+            children: [
+              Icon(Icons.check_circle_rounded, color: Colors.white, size: 20),
+              SizedBox(width: 8),
+              Text('Account created! Please log in.'),
+            ],
+          ),
           backgroundColor: AppTheme.success,
           behavior: SnackBarBehavior.floating,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
         ),
       );
       Navigator.of(context).pushReplacementNamed('/login');
@@ -74,8 +80,7 @@ class _SignupScreenState extends State<SignupScreen> {
           content: Text(auth.errorMessage ?? 'Registration failed'),
           backgroundColor: AppTheme.error,
           behavior: SnackBarBehavior.floating,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
         ),
       );
     }
@@ -93,200 +98,207 @@ class _SignupScreenState extends State<SignupScreen> {
         elevation: 0,
         leading: IconButton(
           onPressed: () => Navigator.pop(context),
-          icon: Icon(Icons.arrow_back_ios_new_rounded,
-              color: Theme.of(context).colorScheme.onSurface, size: 20),
+          icon: Icon(
+            Icons.arrow_back_ios_new_rounded,
+            color: Theme.of(context).colorScheme.onSurface,
+            size: 20,
+          ),
         ),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 28),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
           child: Form(
             key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 8),
-
-                // Header
                 Text(
-                  'Create Account',
-                  style: GoogleFonts.lato(
+                  'Driver Registration',
+                  style: GoogleFonts.plusJakartaSans(
                     color: Theme.of(context).colorScheme.onSurface,
                     fontSize: 28,
-                    fontWeight: FontWeight.w700,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: -0.5,
                   ),
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  'Join The Menu delivery team',
-                  style: GoogleFonts.lato(
-                      color: Theme.of(context)
-                          .colorScheme
-                          .onSurface
-                          .withAlpha(153),
-                      fontSize: 14),
-                ),
-
-                const SizedBox(height: 32),
-
-                // Personal Info section
-                _sectionTitle('Personal Information'),
-                const SizedBox(height: 14),
-
-                CustomTextField(
-                  controller: _nameCtrl,
-                  label: 'Full Name',
-                  hint: 'John Doe',
-                  prefixIcon: Icons.person_outline_rounded,
-                  validator: (val) =>
-                      val == null || val.isEmpty ? 'Name is required' : null,
-                ),
-                const SizedBox(height: 14),
-
-                CustomTextField(
-                  controller: _emailCtrl,
-                  label: 'Email Address',
-                  hint: 'you@example.com',
-                  keyboardType: TextInputType.emailAddress,
-                  prefixIcon: Icons.email_outlined,
-                  validator: (val) {
-                    if (val == null || val.isEmpty) return 'Email is required';
-                    if (!val.contains('@')) return 'Enter a valid email';
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 14),
-
-                CustomTextField(
-                  controller: _phoneCtrl,
-                  label: 'Phone Number',
-                  hint: '+91 98765 43210',
-                  keyboardType: TextInputType.phone,
-                  prefixIcon: Icons.phone_outlined,
-                  validator: (val) =>
-                      val == null || val.isEmpty ? 'Phone is required' : null,
-                ),
-
-                const SizedBox(height: 28),
-
-                // Vehicle Info section
-                _sectionTitle('Vehicle Information'),
-                const SizedBox(height: 14),
-
-                // Vehicle type dropdown
-                DropdownButtonFormField<String>(
-                  initialValue: _vehicleType,
-                  dropdownColor: Theme.of(context).colorScheme.surface,
-                  style: GoogleFonts.lato(
-                      color: Theme.of(context).colorScheme.onSurface,
-                      fontSize: 14),
-                  decoration: const InputDecoration(
-                    labelText: 'Vehicle Type',
-                    prefixIcon: Icon(Icons.two_wheeler_rounded),
+                  'Join The Menu delivery fleet and earn on your schedule',
+                  style: GoogleFonts.plusJakartaSans(
+                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                    fontSize: 14,
                   ),
-                  items: _vehicleTypes
-                      .map((t) => DropdownMenuItem(value: t, child: Text(t)))
-                      .toList(),
-                  onChanged: (val) =>
-                      setState(() => _vehicleType = val ?? _vehicleType),
-                ),
-                const SizedBox(height: 14),
-
-                CustomTextField(
-                  controller: _vehicleNumberCtrl,
-                  label: 'Vehicle Number',
-                  hint: 'KA-01-AB-1234',
-                  prefixIcon: Icons.badge_outlined,
-                  validator: (val) => val == null || val.isEmpty
-                      ? 'Vehicle number is required'
-                      : null,
                 ),
 
                 const SizedBox(height: 28),
 
-                // Security section
-                _sectionTitle('Security'),
-                const SizedBox(height: 14),
+                // Card container
+                Container(
+                  padding: const EdgeInsets.all(22),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.surface,
+                    borderRadius: BorderRadius.circular(24),
+                    border: Border.all(color: Theme.of(context).dividerColor),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.04),
+                        blurRadius: 20,
+                        offset: const Offset(0, 10),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _sectionTitle('Personal Details'),
+                      const SizedBox(height: 16),
 
-                CustomTextField(
-                  controller: _passwordCtrl,
-                  label: 'Password',
-                  hint: '••••••••',
-                  obscureText: _obscurePassword,
-                  prefixIcon: Icons.lock_outline_rounded,
-                  suffixIcon: _obscurePassword
-                      ? Icons.visibility_outlined
-                      : Icons.visibility_off_outlined,
-                  onSuffixTap: () =>
-                      setState(() => _obscurePassword = !_obscurePassword),
-                  validator: (val) {
-                    if (val == null || val.isEmpty) {
-                      return 'Password is required';
-                    }
-                    if (val.length < 8) return 'At least 8 characters';
-                    return null;
-                  },
+                      CustomTextField(
+                        controller: _nameCtrl,
+                        label: 'Full Name',
+                        hint: 'John Doe',
+                        prefixIcon: Icons.person_outline_rounded,
+                        validator: (val) => val == null || val.trim().isEmpty ? 'Full name is required' : null,
+                      ),
+                      const SizedBox(height: 16),
+
+                      CustomTextField(
+                        controller: _emailCtrl,
+                        label: 'Email Address',
+                        hint: 'driver@example.com',
+                        keyboardType: TextInputType.emailAddress,
+                        prefixIcon: Icons.alternate_email_rounded,
+                        validator: (val) {
+                          if (val == null || val.trim().isEmpty) return 'Email is required';
+                          if (!val.contains('@')) return 'Enter a valid email';
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 16),
+
+                      CustomTextField(
+                        controller: _phoneCtrl,
+                        label: 'Phone Number',
+                        hint: '077 123 4567',
+                        keyboardType: TextInputType.phone,
+                        prefixIcon: Icons.phone_outlined,
+                        validator: (val) => val == null || val.trim().isEmpty ? 'Phone number is required' : null,
+                      ),
+
+                      const SizedBox(height: 28),
+                      _sectionTitle('Vehicle Details'),
+                      const SizedBox(height: 16),
+
+                      // Vehicle Type Dropdown
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Vehicle Type',
+                            style: GoogleFonts.plusJakartaSans(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.85),
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          DropdownButtonFormField<String>(
+                            initialValue: _vehicleType,
+                            dropdownColor: Theme.of(context).colorScheme.surface,
+                            style: GoogleFonts.plusJakartaSans(
+                              color: Theme.of(context).colorScheme.onSurface,
+                              fontSize: 15,
+                              fontWeight: FontWeight.w500,
+                            ),
+                            decoration: const InputDecoration(
+                              prefixIcon: Icon(Icons.two_wheeler_rounded, size: 20),
+                            ),
+                            items: _vehicleTypes
+                                .map((t) => DropdownMenuItem(value: t, child: Text(t)))
+                                .toList(),
+                            onChanged: (val) => setState(() => _vehicleType = val ?? _vehicleType),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+
+                      CustomTextField(
+                        controller: _vehicleNumberCtrl,
+                        label: 'License Plate / Plate Number',
+                        hint: 'WP B-1234',
+                        prefixIcon: Icons.badge_outlined,
+                        validator: (val) => val == null || val.trim().isEmpty ? 'Plate number is required' : null,
+                      ),
+
+                      const SizedBox(height: 28),
+                      _sectionTitle('Security'),
+                      const SizedBox(height: 16),
+
+                      CustomTextField(
+                        controller: _passwordCtrl,
+                        label: 'Password',
+                        hint: '••••••••',
+                        obscureText: _obscurePassword,
+                        prefixIcon: Icons.lock_outline_rounded,
+                        suffixIcon: _obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                        onSuffixTap: () => setState(() => _obscurePassword = !_obscurePassword),
+                        validator: (val) {
+                          if (val == null || val.isEmpty) return 'Password is required';
+                          if (val.length < 8) return 'At least 8 characters';
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 16),
+
+                      CustomTextField(
+                        controller: _confirmPassCtrl,
+                        label: 'Confirm Password',
+                        hint: '••••••••',
+                        obscureText: _obscureConfirm,
+                        prefixIcon: Icons.lock_outline_rounded,
+                        suffixIcon: _obscureConfirm ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                        onSuffixTap: () => setState(() => _obscureConfirm = !_obscureConfirm),
+                        validator: (val) {
+                          if (val == null || val.isEmpty) return 'Please confirm your password';
+                          if (val != _passwordCtrl.text) return 'Passwords do not match';
+                          return null;
+                        },
+                      ),
+
+                      const SizedBox(height: 32),
+
+                      CustomButton(
+                        label: 'Create Driver Account',
+                        icon: Icons.person_add_alt_1_rounded,
+                        isLoading: isLoading,
+                        onPressed: isLoading ? null : _register,
+                      ),
+                    ],
+                  ),
                 ),
-                const SizedBox(height: 14),
 
-                CustomTextField(
-                  controller: _confirmPassCtrl,
-                  label: 'Confirm Password',
-                  hint: '••••••••',
-                  obscureText: _obscureConfirm,
-                  prefixIcon: Icons.lock_outline_rounded,
-                  suffixIcon: _obscureConfirm
-                      ? Icons.visibility_outlined
-                      : Icons.visibility_off_outlined,
-                  onSuffixTap: () =>
-                      setState(() => _obscureConfirm = !_obscureConfirm),
-                  validator: (val) {
-                    if (val == null || val.isEmpty) {
-                      return 'Please confirm your password';
-                    }
-                    if (val != _passwordCtrl.text) {
-                      return 'Passwords do not match';
-                    }
-                    return null;
-                  },
-                ),
-
-                const SizedBox(height: 36),
-
-                CustomButton(
-                  label: 'Create Account',
-                  isLoading: isLoading,
-                  onPressed: isLoading ? null : _register,
-                ),
-
-                const SizedBox(height: 20),
+                const SizedBox(height: 24),
 
                 Center(
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        'Already have an account? ',
-                        style: GoogleFonts.lato(
-                            color: Theme.of(context)
-                                .colorScheme
-                                .onSurface
-                                .withAlpha(153),
-                            fontSize: 14),
-                      ),
-                      TextButton(
-                        onPressed: () => Navigator.of(context).pop(),
-                        style: TextButton.styleFrom(
-                          padding: EdgeInsets.zero,
-                          minimumSize: Size.zero,
-                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        'Already registered? ',
+                        style: GoogleFonts.plusJakartaSans(
+                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                          fontSize: 14,
                         ),
+                      ),
+                      GestureDetector(
+                        onTap: () => Navigator.of(context).pop(),
                         child: Text(
-                          'Login',
-                          style: GoogleFonts.lato(
-                            color: AppTheme.primary,
+                          'Sign In',
+                          style: GoogleFonts.plusJakartaSans(
+                            color: AppTheme.primaryDark,
                             fontSize: 14,
-                            fontWeight: FontWeight.w600,
+                            fontWeight: FontWeight.w700,
                           ),
                         ),
                       ),
@@ -294,7 +306,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   ),
                 ),
 
-                const SizedBox(height: 40),
+                const SizedBox(height: 36),
               ],
             ),
           ),
@@ -308,19 +320,19 @@ class _SignupScreenState extends State<SignupScreen> {
       children: [
         Container(
           width: 4,
-          height: 18,
+          height: 16,
           decoration: BoxDecoration(
             color: AppTheme.primary,
-            borderRadius: BorderRadius.circular(4),
+            borderRadius: BorderRadius.circular(2),
           ),
         ),
-        const SizedBox(width: 10),
+        const SizedBox(width: 8),
         Text(
           title,
-          style: GoogleFonts.poppins(
-            color: Theme.of(context).colorScheme.onSurface,
+          style: GoogleFonts.plusJakartaSans(
             fontSize: 15,
-            fontWeight: FontWeight.w600,
+            fontWeight: FontWeight.w700,
+            color: Theme.of(context).colorScheme.onSurface,
           ),
         ),
       ],
